@@ -1,19 +1,19 @@
 [
   {
     "id": 1,
+    "type": "initial",
     "resource": "hy",
     "dateArrival": "20-11-2017",
     "qnt": 120,
     "price": 10.80,
-    "vendor": "ContiPro",
-    "type":"initial"
+    "vendor": "ContiPro"
   },
   {
-    "id":  "1",
+    "id": "1",
+    "type": "in-transfer",
     "resource": "hy",
     "dateArrival": "15-02-2018",
     "qnt": 300,
-    "price": 10.80,
-    "type": "in-transfer"
+    "price": 10.80
   }
 ]
