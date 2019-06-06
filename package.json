@@ -1,6 +1,6 @@
 {
   "name": "biomatrix-mrp-server",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "DEBUG=biomatrix-mrp-server:* babel-node ./bin/www"
@@ -10,8 +10,10 @@
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
+    "lodash": "^4.17.11",
+    "moment": "^2.24.0",
     "morgan": "~1.9.1",
-    "pug": "2.0.0-beta11",
+    "pug": "^2.0.3",
     "standard": "^12.0.1"
   },
   "devDependencies": {

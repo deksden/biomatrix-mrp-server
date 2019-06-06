@@ -3,7 +3,7 @@
     "id": 1,
     "type": "initial",
     "resource": "hy",
-    "dateArrival": "20-11-2017",
+    "date": "20-11-2017",
     "qnt": 120,
     "price": 10.80,
     "vendor": "ContiPro"
@@ -12,7 +12,7 @@
     "id": "1",
     "type": "in-transfer",
     "resource": "hy",
-    "dateArrival": "15-02-2018",
+    "date": "15-02-2018",
     "qnt": 300,
     "price": 10.80
   }

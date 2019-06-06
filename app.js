@@ -6,6 +6,8 @@ import logger from 'morgan'
 import indexRouter from './routes/index'
 import usersRouter from './routes/users'
 
+import Mrp from './services/mrp'
+
 var app = express()
 
 // view engine setup
@@ -36,5 +38,7 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500)
   res.render('error')
 })
+
+const mrp = Mrp('./data/products.json')
 
 module.exports = app

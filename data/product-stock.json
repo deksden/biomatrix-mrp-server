@@ -11,7 +11,7 @@
     "id": 2,
     "product": "bmx",
     "type": "in-production",
-    "readyDate": "25-01-2018",
+    "date": "25-01-2018",
     "qnt": 8000,
     "price": 0
   }
