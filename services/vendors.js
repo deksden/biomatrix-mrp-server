@@ -1,17 +1,23 @@
 import _ from 'lodash'
 import fs from 'fs'
 import path from 'path'
-import {StageResources} from './stage-resources'
+import Moment from 'moment'
+import {Payments} from './vendor-payments'
+import { defDateFormat } from './def-date-format'
 
-export class Stages {
+export class Vendors {
   constructor (aPath) {
-    this._stages = JSON.parse(fs.readFileSync(path.format({ dir: aPath, base: 'stages.json'})))
-    this._stageResources = new StageResources(aPath)
+    this._items = JSON.parse(fs.readFileSync(path.format({ dir: aPath, base: 'vendors.json'})))
+
+    this._payments = new Payments(aPath)
+
+    this._items.map((item) => {
+      item.date = new Moment(item.date, defDateFormat)
+      item.payments = this._payments.filterByVendor(item.id)
+    })
   }
 
-  filterByProduct (productId) {
-    const aStages = _.filter(this._stages, (stage) => stage.product === productId)
-    aStages.map((stage) => stage.resources = this._stageResources.filterByStage(stage.id))
-    return aStages
+  filterByResource (id) {
+    return _.filter(this._items, (item) => item.resource === id)
   }
 }
