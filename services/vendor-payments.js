@@ -2,9 +2,18 @@ import _ from 'lodash'
 import fs from 'fs'
 import path from 'path'
 
+let _items = []
+
 export class Payments {
   constructor (aPath) {
-    this._items = JSON.parse(fs.readFileSync(path.format({ dir: aPath, base: 'vendor-payments.json'})))
+    if (aPath) {
+      this.aPath = aPath
+      this.loadFromFile(path.format({ dir: aPath, base: 'vendor-payments.json' }))
+    }
+  }
+
+  loadFromFile (aFile) {
+    this._items = JSON.parse(fs.readFileSync())
   }
 
   filterByVendor (id) {
@@ -12,6 +21,10 @@ export class Payments {
   }
 
   findById (id) {
-    return _.find( this._items, { stage: id })
+    return _.find(this._items, { stage: id })
+  }
+
+  get payments () {
+    return _items
   }
 }

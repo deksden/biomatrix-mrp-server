@@ -35,12 +35,4 @@ export class Products {
   get products () {
     return _products
   }
-
-  get stages () {
-    return _stages
-  }
-
-  get stock () {
-    return _stock
-  }
 }

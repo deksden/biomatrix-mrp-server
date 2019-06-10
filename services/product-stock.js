@@ -4,7 +4,7 @@ import path from 'path'
 import Moment from 'moment'
 import { defDateFormat } from './def-date-format.js'
 
-let _stock = []
+let _items = []
 
 export class Stock {
   constructor (aPath) {
@@ -14,17 +14,17 @@ export class Stock {
   }
 
   loadFromFile (aFile) {
-    _stock = JSON.parse(fs.readFileSync(aFile))
-    _stock.map((item) => {
+    _items = JSON.parse(fs.readFileSync(aFile))
+    _items.map((item) => {
       item.date = new Moment(item.date, defDateFormat)
     })
   }
 
   filterByProduct (productId) {
-    return _.filter(_stock, (stock) => stock.product === productId)
+    return _.filter(_items, (stock) => stock.product === productId)
   }
 
-  get items () {
-    return _stock
+  get stock () {
+    return _items
   }
 }
