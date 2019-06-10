@@ -21,11 +21,11 @@ export class StageResources {
   }
 
   filterByStage (stageId) {
-    return _.filter(this._stage_resources, (stageResource) => stageResource.stage === stageId)
+    return _.filter(_items, (stageResource) => stageResource.stage === stageId)
   }
 
   findById (id) {
-    return _.find(this._stage_resources, { stage: id })
+    return _.find(_items, { stage: id })
   }
 
   get stageResources () {

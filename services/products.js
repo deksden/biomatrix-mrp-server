@@ -29,7 +29,7 @@ export class Products {
   }
 
   findById (id) {
-    return _.find(this._products, { id })
+    return _.find(_products, { id })
   }
 
   get products () {

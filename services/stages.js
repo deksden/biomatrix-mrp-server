@@ -17,12 +17,11 @@ export class Stages {
   loadFromFile (aFile) {
     _items = JSON.parse(fs.readFileSync(aFile))
     _stageResources = new StageResources(this._aPath)
+    _items.map((stage) => { stage.resources = _stageResources.filterByStage(stage.id) })
   }
 
   filterByProduct (productId) {
-    const aStages = _.filter(_items, (stage) => stage.product === productId)
-    aStages.map((stage) => { stage.resources = _stageResources.filterByStage(stage.id) })
-    return aStages
+    return _.filter(_items, (stage) => stage.product === productId)
   }
 
   get stages () {

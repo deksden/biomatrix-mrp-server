@@ -17,7 +17,7 @@ export class Vendors {
   }
 
   loadFromfile (aFile) {
-    _items = JSON.parse(fs.readFileSync())
+    _items = JSON.parse(fs.readFileSync(aFile))
 
     _payments = new Payments(this._aPath)
 
@@ -28,7 +28,7 @@ export class Vendors {
   }
 
   filterByResource (id) {
-    return _.filter(this._items, (item) => item.resource === id)
+    return _.filter(_items, (item) => item.resource === id)
   }
 
   get vendors () {

@@ -21,7 +21,7 @@ export class Stock {
   }
 
   filterByResource (resourceId) {
-    return _.filter(this._stock, (stock) => stock.resource === resourceId)
+    return _.filter(_items, (stock) => stock.resource === resourceId)
   }
 
   get stock () {

@@ -13,15 +13,15 @@ export class Payments {
   }
 
   loadFromFile (aFile) {
-    this._items = JSON.parse(fs.readFileSync())
+    _items = JSON.parse(fs.readFileSync(aFile))
   }
 
   filterByVendor (id) {
-    return _.filter(this._items, (item) => item.vendor === id)
+    return _.filter(_items, (item) => item.vendor === id)
   }
 
   findById (id) {
-    return _.find(this._items, { stage: id })
+    return _.find(_items, { stage: id })
   }
 
   get payments () {
