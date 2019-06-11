@@ -21,7 +21,8 @@ export class Stock {
   }
 
   filterByProduct (productId) {
-    return _.filter(_items, (stock) => stock.product === productId)
+    const data = _.filter(_items, (stock) => stock.product === productId)
+    return _.orderBy(data, ['date', 'type', 'qnt'])
   }
 
   get stock () {

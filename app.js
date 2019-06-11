@@ -39,6 +39,6 @@ app.use(function (err, req, res, next) {
   res.render('error')
 })
 
-const mrp = Mrp('./data/products.json')
+const mrp = Mrp('./data')
 
 module.exports = app

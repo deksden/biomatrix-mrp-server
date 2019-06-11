@@ -1,4 +1,4 @@
-import { Products } from './products'
+import { Plans } from './plans'
 
 /*
 
@@ -9,8 +9,17 @@ import { Products } from './products'
 
 * */
 
-export const Mrp = (fileName) => {
-  return new Products(fileName)
+import { Products } from './products'
+
+export const Mrp = (aPath) => {
+  const plans = new Plans(aPath)
+
+  plans.sortedByDate.map((plan) => {
+    // на каждую дату вычисляем остаток товара на складе на эту дату.
+    const products = new Products() // берем API products
+    const qnt = products.stockQntForDate(plan.product, plan.date)
+    console.log(`qnt: ${plan.date.format('DD-MM-YYYY')} -> ${qnt}`)
+  })
 }
 
 module.exports = Mrp

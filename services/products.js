@@ -6,22 +6,24 @@ import { Stages } from './stages'
 import { Stock } from './product-stock'
 import { defDateFormat } from './def-date-format.js'
 
-let _products = []
+let _items = []
 let _stages = {}
 let _stock = {}
 
 export class Products {
-  constructor (fileName) {
-    this.loadFromFile(fileName)
+  constructor (aPath) {
+    if (aPath) {
+      this._aPath = aPath
+      this.loadFromFile(path.format({ dir: aPath, base: 'products.json' }))
+    }
   }
 
   loadFromFile (aFile) {
-    this._path = path.dirname(aFile)
-    _products = JSON.parse(fs.readFileSync(aFile))
+    _items = JSON.parse(fs.readFileSync(aFile))
 
-    _stages = new Stages(this._path)
-    _stock = new Stock(this._path)
-    _products.map((product) => {
+    _stages = new Stages(this._aPath)
+    _stock = new Stock(this._aPath)
+    _items.map((product) => {
       product.initialDate = new Moment(product.initialDate, defDateFormat)
       product.stages = _stages.filterByProduct(product.id)
       product.stock = _stock.filterByProduct(product.id)
@@ -29,10 +31,25 @@ export class Products {
   }
 
   findById (id) {
-    return _.find(_products, { id })
+    return _.find(_items, { id })
+  }
+
+  filterByProduct (productId) {
+    return _.filter(_items, (item) => item.id === productId)
+  }
+
+  stockQntForDate (productId, date) {
+    const product = this.findById(productId)
+    let qnt = 0
+    product.stock.map((item) => {
+      if (item.date.isSameOrBefore(date)) {
+        qnt += item.qnt
+      }
+    })
+    return qnt
   }
 
   get products () {
-    return _products
+    return _items
   }
 }
