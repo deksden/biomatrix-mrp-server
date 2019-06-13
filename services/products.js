@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import Moment from 'moment'
+import Moment from 'moment-business-days'
 import _ from 'lodash'
 import { Stages } from './stages'
 import { Stock } from './product-stock'
@@ -39,14 +39,58 @@ export class Products {
   }
 
   stockQntForDate (productId, date) {
-    const product = this.findById(productId)
     let qnt = 0
-    product.stock.map((item) => {
+    _stock.filterByProduct(productId).map((item) => {
       if (item.date.isSameOrBefore(date)) {
         qnt += item.qnt
       }
     })
     return qnt
+  }
+
+  prodDuration (productId) {
+    let i = 0
+    _stages.filterByProduct(productId).map((stage) => {
+      i += stage.duration
+    })
+    return i
+  }
+
+  /**
+   * planProduction: Запланировать производство партии продукции:
+   * @param productId   код продукта
+   * @param date    дата, к которой партия долюна быть произведения (возможно Moment)
+   * @param qnt     количество продукции для производства
+   *
+   * @returns Plans object
+   */
+  planProduction (productId, date, qnt) {
+    // получить продукт, производство которого планируем
+    const product = this.findById(productId)
+
+    // добавить запись о планах производства продукции в остатки
+    const stock = new Stock() // get stock API:
+    stock.create({ type: 'prod', product: product.id, date: new Moment(date), qnt })
+
+    // спланируем производство партии продукции
+    // рассчитаем дату начала этапа:
+    const duration = this.prodDuration(productId)
+    let startDate = {}
+    const endDate = new Moment(date)
+    if (product.inWorkingDays) {
+      startDate = endDate.businessSubtract(duration)
+    } else {
+      startDate = endDate.subtract(duration, 'days')
+    }
+    console.log(`startDate: ${startDate.format('DD-MM-YYYY')}`)
+
+    // получим список этапов производства
+    const stages = new Stages() // получим доступ к API
+    // отсортируем список этапов по порядку (и по идентификаторам)
+    _.orderBy(stages.filterByProduct(productId), ['order', 'id']).map((stage) => {
+      // для этого этапа получим список требуемых ресурсов
+    })
+
   }
 
   get products () {

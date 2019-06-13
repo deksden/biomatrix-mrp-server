@@ -2,8 +2,9 @@
   {
     "id": 1,
     "product": "bmx",
-    "title": "BMX stage 1",
+    "order": 1,
+    "caption": "BMX stage 1",
     "duration": 4,
-    "inWorkingDays": false
+    "comments": ""
   }
 ]

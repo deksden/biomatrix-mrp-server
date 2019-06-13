@@ -25,6 +25,13 @@ export class Stock {
     return _.orderBy(data, ['date', 'type', 'qnt'])
   }
 
+  create (item) {
+    const id = _.maxBy(_items, 'id') + 1
+    const aItem = _.merge({ id }, item)
+    _items.push(aItem)
+    return aItem
+  }
+
   get stock () {
     return _items
   }
