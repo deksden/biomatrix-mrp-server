@@ -24,6 +24,13 @@ export class Stock {
     return _.filter(_items, (stock) => stock.resource === resourceId)
   }
 
+  create (item) {
+    const id = _.maxBy(_items, 'id') + 1
+    const aItem = _.merge({ id }, item)
+    _items.push(aItem)
+    return aItem
+  }
+
   get stock () {
     return _items
   }

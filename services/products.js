@@ -4,7 +4,10 @@ import Moment from 'moment-business-days'
 import _ from 'lodash'
 import { Stages } from './stages'
 import { Stock } from './product-stock'
+import { Stock as ResourceStock } from './resource-stock'
 import { defDateFormat } from './def-date-format.js'
+import { StageResources } from './stage-resources'
+import { Resources } from './resources'
 
 let _items = []
 let _stages = {}
@@ -67,6 +70,16 @@ export class Products {
   planProduction (productId, date, qnt) {
     // получить продукт, производство которого планируем
     const product = this.findById(productId)
+    const ret = {}
+
+    console.log(`\nPlanning production ${product.caption} ${date.format('DD-MM-YYYY')} qnt=${qnt}`)
+
+    let qntForProd = product.qntStep
+    while (qntForProd < (qnt + product.qntMin)) {
+      qntForProd += product.qntStep
+    }
+    console.log(`prodQnt = ${qntForProd}`)
+    ret.qntForProd = qntForProd
 
     // добавить запись о планах производства продукции в остатки
     const stock = new Stock() // get stock API:
@@ -75,7 +88,7 @@ export class Products {
     // спланируем производство партии продукции
     // рассчитаем дату начала этапа:
     const duration = this.prodDuration(productId)
-    let startDate = {}
+    let startDate
     const endDate = new Moment(date)
     if (product.inWorkingDays) {
       startDate = endDate.businessSubtract(duration)
@@ -85,12 +98,50 @@ export class Products {
     console.log(`startDate: ${startDate.format('DD-MM-YYYY')}`)
 
     // получим список этапов производства
-    const stages = new Stages() // получим доступ к API
-    // отсортируем список этапов по порядку (и по идентификаторам)
-    _.orderBy(stages.filterByProduct(productId), ['order', 'id']).map((stage) => {
-      // для этого этапа получим список требуемых ресурсов
-    })
+    const stagesAPI = new Stages() // получим доступ к нужным API
+    const stageResourcesAPI = new StageResources()
+    const resourcesAPI = new Resources()
+    const resourceStockAPI = new ResourceStock()
 
+    // начальная дата производства и первого этапа:
+    let stageStart = new Moment(startDate)
+    // отсортируем список этапов по порядку (и по идентификаторам)
+    _.orderBy(stagesAPI.filterByProduct(productId), ['order', 'id']).map((stage) => {
+      // для этого этапа получим список требуемых ресурсов
+      console.log(`stage: ${stage.order} "${stage.caption}"`)
+      const stageResources = stageResourcesAPI.filterByStage(stage.id)
+
+      // обработаем список ресурсов
+      stageResources.map((stageResource) => {
+        // для каждого ресурса получим его количество на складе на начало этапа:
+        const stockQnt = resourcesAPI.stockQntForDate(stageResource.resource.id, stageStart)
+
+        // вычислим требуемое количество ресурса для данного этапа
+        const reqQnt = qnt / product.baseQnt * stageResource.qnt
+        console.log(`Resource: ${stageResource.resource.caption} stock ${stockQnt} req ${reqQnt}`)
+
+        // если есть дефицит ресурсов - спланировать его закупку
+        if (reqQnt > (stockQnt - stageResource.resource.minStock)) {
+          // заказываем такое количество ресурсов, чтобы на начало этапа было как минимум требуемое количество плюс мин запас
+          resourcesAPI.planOrderRes(stageResource.resource.id, stageStart, (reqQnt + stageResource.resource.minStock - stockQnt))
+        }
+
+        // увеличить дату на длительность этапа:
+        product.inWorkingDays
+          ? startDate = startDate.buisnessAdd(stage.duration)
+          : startDate = startDate.add(stage.duration, 'days')
+
+        // списать ресурсы на производство датой окончания этапа:
+        resourceStockAPI.create({
+          resource: stageResource.resource.id,
+          type: 'prod',
+          date: startDate,
+          qnt: -reqQnt,
+          comment: `product ${stageResource.resource.id} stage: ${stage.order} ${stage.caption}`
+        })
+      })
+    })
+    return ret
   }
 
   get products () {

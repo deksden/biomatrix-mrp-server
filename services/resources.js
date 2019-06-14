@@ -38,4 +38,55 @@ export class Resources {
   get resources () {
     return _items
   }
+
+  stockQntForDate (resourceId, date) {
+    let qnt = 0
+    _.orderBy(_stock.filterByResource(resourceId), ['date', 'id']).map((item) => {
+      if (item.date.isSameOrBefore(date)) {
+        qnt += item.qnt
+      }
+    })
+    return qnt
+  }
+
+  /**
+   * Запланировать заказ ресурсов
+   * @param resourceId  ресурс для заказа
+   * @param date        дата когда он должен поступить на склад
+   * @param qnt         количество ресурсов, которое в указанную дату должно быть на складе
+   */
+  planOrderRes (resourceId, date, qnt) {
+    // подключим нужные API:
+    const vendorsAPI = new Vendors()
+    const resourceStockAPI = new Stock()
+    const ret = {}
+    const resource = this.findById(resourceId)
+
+    console.log(`Planning order: res ${resource.caption} ${date.format('DD-MM-YYYY')} qnt=${qnt}`)
+
+    // выбрать вендора для этой поставки:
+    const vendor = vendorsAPI.selectVendor(resourceId, date)
+
+    if (!vendor) {
+      return { error: 'Vendor not found' }
+    }
+    console.log(`Vendor selected: ${vendor.caption}`)
+    // рассчитаем количество ресурса для заказа:
+    let orderQnt = vendor.orderMin
+    while (orderQnt < qnt) {
+      orderQnt += vendor.orderStep
+    }
+    console.log(`Order qnt calculated: ${orderQnt}`)
+
+    const startDate = vendorsAPI.calculateOrderStartDate(vendor.id, date)
+    console.log(`Ordered: ${startDate.format(defDateFormat)} qnt=${orderQnt} price=${vendor.invoicePrice}`)
+    // записать заказ ресурса в список партий:
+    return resourceStockAPI.create({
+      type: 'order',
+      resource: resourceId,
+      date: startDate,
+      qnt: orderQnt,
+      price: vendor.invoicePrice
+    })
+  }
 }

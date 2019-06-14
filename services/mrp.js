@@ -28,20 +28,15 @@ export const Mrp = (aPath) => {
 
     // смотрим текущее сальдо между продажами и производством
     const currentQnt = stockQnt - planQnt
-    console.log(`product "${product.caption}", ${plan.date.format('DD-MM-YYYY')}: stock ${stockQnt}, plan ${planQnt} = ${currentQnt}`)
+    console.log(`\nproduct "${product.caption}", ${plan.date.format('DD-MM-YYYY')}: stock ${stockQnt}, plan ${planQnt} = ${currentQnt}`)
 
     if (currentQnt <= product.qntMin) {
       // если текущее сальдо меньше минимального остатка на складе, нужно планировать партию продукции:
       console.log(`Need production: minQnt ${product.qntMin}`)
 
-      // рассчитаем количество для производства: это сальдо плюс мин остаток, должно быть кратно партии qntStep:
-      let qntForProd = product.qntStep
-      while (qntForProd < (Math.abs(currentQnt) + product.qntMin)) {
-        qntForProd += product.qntStep
-      }
-      products.planProduction(product.id, plan.date, qntForProd)
+      const plannedProd = products.planProduction(product.id, plan.date, Math.abs(currentQnt))
       const prodDuration = products.prodDuration(product.id)
-      console.log(`Production qnt: ${qntForProd}, ${prodDuration}${product.inWorkingDays ? 'wd' : 'd'}`)
+      console.log(`Production qnt: ${plannedProd.qntForProd}, ${prodDuration}${product.inWorkingDays ? 'wd' : 'd'}`)
     }
   })
 

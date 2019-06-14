@@ -6,14 +6,16 @@
     "date": "20-11-2017",
     "qnt": 120,
     "price": 10.80,
-    "vendor": "ContiPro"
+    "vendor": "ContiPro",
+    "comments": ""
   },
   {
-    "id": "1",
+    "id": "2",
     "type": "in-transfer",
     "resource": "hy",
     "date": "15-02-2018",
     "qnt": 300,
-    "price": 10.80
+    "price": 10.80,
+    "comments": ""
   }
 ]
