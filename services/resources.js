@@ -59,7 +59,6 @@ export class Resources {
     // подключим нужные API:
     const vendorsAPI = new Vendors()
     const resourceStockAPI = new Stock()
-    const ret = {}
     const resource = this.findById(resourceId)
 
     console.log(`Planning order: res ${resource.caption} ${date.format('DD-MM-YYYY')} qnt=${qnt}`)
@@ -68,7 +67,7 @@ export class Resources {
     const vendor = vendorsAPI.selectVendor(resourceId, date)
 
     if (!vendor) {
-      return { error: 'Vendor not found' }
+      throw new Error('Vendor not found')
     }
     console.log(`Vendor selected: ${vendor.caption}`)
     // рассчитаем количество ресурса для заказа:
